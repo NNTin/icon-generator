@@ -34,12 +34,13 @@ function DownloadPanel({ emoji }: DownloadPanelProps) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // fallback for non-secure contexts
+      // Fallback for non-secure contexts (HTTP) where Clipboard API is unavailable.
+      // execCommand is deprecated but remains the only option in those environments.
       const ta = document.createElement('textarea');
       ta.value = htmlSnippet;
       document.body.appendChild(ta);
       ta.select();
-      document.execCommand('copy');
+      document.execCommand('copy'); // eslint-disable-line @typescript-eslint/no-deprecated
       document.body.removeChild(ta);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);

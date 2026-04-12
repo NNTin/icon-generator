@@ -13,8 +13,7 @@
     "file-saver": "^2.0.5",
     "jszip": "^3.10.1",
     "react": "^19.2.4",
-    "react-dom": "^19.2.4",
-    "to-ico": "^1.1.5"
+    "react-dom": "^19.2.4"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",

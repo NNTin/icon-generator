@@ -31,7 +31,7 @@ export function createEmojiCanvas(emoji: string, size: number): HTMLCanvasElemen
   if (!ctx) return canvas;
 
   ctx.clearRect(0, 0, size, size);
-  const fontSize = size * 0.8;
+  const fontSize = size * 0.75;
   ctx.font = `${fontSize}px 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';

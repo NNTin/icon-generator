@@ -46,11 +46,13 @@ function CodeBlock({ code, id }: CodeBlockProps) {
     try {
       await navigator.clipboard.writeText(code);
     } catch {
+      // Fallback for non-secure contexts (HTTP) where Clipboard API is unavailable.
+      // execCommand is deprecated but remains the only option in those environments.
       const ta = document.createElement('textarea');
       ta.value = code;
       document.body.appendChild(ta);
       ta.select();
-      document.execCommand('copy');
+      document.execCommand('copy'); // eslint-disable-line @typescript-eslint/no-deprecated
       document.body.removeChild(ta);
     }
     setCopied(true);
