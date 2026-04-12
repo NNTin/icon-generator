@@ -1,0 +1,85 @@
+import { useCallback, useState } from 'react';
+import JSZip from 'jszip';
+import { exportPng } from '../utils/exportPng';
+import { exportIco } from '../utils/exportIco';
+import { exportSvg } from '../utils/exportSvg';
+import { createEmojiCanvas, canvasToBlob } from '../utils/canvas';
+
+type DownloadType = 'png16' | 'png32' | 'png48' | 'png180' | 'ico' | 'svg' | 'zip';
+
+interface FaviconGenerator {
+  generating: boolean;
+  generateAndDownload: (type: DownloadType) => Promise<void>;
+}
+
+export function useFaviconGenerator(emoji: string): FaviconGenerator {
+  const [generating, setGenerating] = useState(false);
+
+  const generateAndDownload = useCallback(
+    async (type: DownloadType) => {
+      setGenerating(true);
+      try {
+        switch (type) {
+          case 'png16':
+            await exportPng(emoji, 16, 'favicon-16.png');
+            break;
+          case 'png32':
+            await exportPng(emoji, 32, 'favicon-32.png');
+            break;
+          case 'png48':
+            await exportPng(emoji, 48, 'favicon-48.png');
+            break;
+          case 'png180':
+            await exportPng(emoji, 180, 'apple-touch-icon.png');
+            break;
+          case 'ico':
+            await exportIco(emoji, 'favicon.ico');
+            break;
+          case 'svg':
+            await exportSvg(emoji, 'favicon.svg');
+            break;
+          case 'zip':
+            await exportZip(emoji);
+            break;
+        }
+      } finally {
+        setGenerating(false);
+      }
+    },
+    [emoji]
+  );
+
+  return { generating, generateAndDownload };
+}
+
+async function exportZip(emoji: string): Promise<void> {
+  const zip = new JSZip();
+
+  const sizes: Array<[number, string]> = [
+    [16, 'favicon-16.png'],
+    [32, 'favicon-32.png'],
+    [48, 'favicon-48.png'],
+    [180, 'apple-touch-icon.png'],
+  ];
+
+  await Promise.all(
+    sizes.map(async ([size, filename]) => {
+      const canvas = createEmojiCanvas(emoji, size);
+      const blob = await canvasToBlob(canvas);
+      zip.file(filename, blob);
+    })
+  );
+
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <text y=".9em" font-size="90" font-family="'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif">${emoji}</text>
+</svg>`;
+  zip.file('favicon.svg', svg);
+
+  const content = await zip.generateAsync({ type: 'blob' });
+  const url = URL.createObjectURL(content);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'favicon-pack.zip';
+  a.click();
+  URL.revokeObjectURL(url);
+}
