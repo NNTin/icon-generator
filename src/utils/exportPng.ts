@@ -5,7 +5,7 @@ function triggerDownload(url: string, filename: string): void {
   a.href = url;
   a.download = filename;
   a.click();
-  URL.revokeObjectURL(url);
+  window.setTimeout(() => URL.revokeObjectURL(url), 0);
 }
 
 export async function exportPng(emoji: string, size: number, filename: string): Promise<void> {

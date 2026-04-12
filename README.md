@@ -1,73 +1,51 @@
-# React + TypeScript + Vite
+# 🥫 Tin — Can of Icons
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A browser-only emoji favicon generator. Pick any emoji, preview it at every standard favicon size, and download production-ready assets — with **zero servers, zero uploads**.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Live preview** — see your emoji rendered at 16×16, 32×32, 48×48, and 180×180 px instantly
+- **PNG exports** — `favicon-16.png`, `favicon-32.png`, `favicon-48.png`, `apple-touch-icon.png`
+- **ICO export** — multi-resolution `favicon.ico` (16 + 32 + 48 px, PNG-in-ICO format)
+- **SVG export** — scalable `favicon.svg`
+- **ZIP bundle** — one click to download all assets as `favicon-pack.zip`
+- **Copy HTML tags** — grab the `<link>` snippet for your `<head>` in one click
+- **Random emoji** button and preset palette (🚀 ⚡ 🧠 🧪 💡 🎯 🔥 💎)
+- **Dark / light theme** toggle
+- Runs entirely in the browser — no Node.js, no backend, no file uploads
 
-## React Compiler
+## Getting started
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Open <http://localhost:5173> in your browser.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Build for production
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run build      # type-check + Vite production build → dist/
+npm run preview    # serve the production build locally
 ```
+
+## Add favicons to your project
+
+Place the downloaded files in your project root (or `public/` for Vite / Next.js) and add to your HTML `<head>`:
+
+```html
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+```
+
+For **Next.js App Router**, drop `favicon.ico` directly into `app/`.
+
+## Tech stack
+
+- [React 19](https://react.dev) + [TypeScript](https://www.typescriptlang.org) (strict mode)
+- [Vite](https://vite.dev)
+- [JSZip](https://stuk.github.io/jszip/) — in-browser ZIP assembly
+- HTML Canvas API — emoji rendering + PNG export
+- Custom `DataView`-based ICO builder — no Node.js dependencies
