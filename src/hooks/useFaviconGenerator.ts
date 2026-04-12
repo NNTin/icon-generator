@@ -1,8 +1,8 @@
 import { useCallback, useState } from 'react';
 import JSZip from 'jszip';
 import { exportPng } from '../utils/exportPng';
-import { exportIco } from '../utils/exportIco';
-import { exportSvg } from '../utils/exportSvg';
+import { exportIco, buildIcoFromPngBlobs } from '../utils/exportIco';
+import { exportSvg, buildSvgString } from '../utils/exportSvg';
 import { createEmojiCanvas, canvasToBlob } from '../utils/canvas';
 
 type DownloadType = 'png16' | 'png32' | 'png48' | 'png180' | 'ico' | 'svg' | 'zip';
@@ -55,25 +55,30 @@ export function useFaviconGenerator(emoji: string): FaviconGenerator {
 async function exportZip(emoji: string): Promise<void> {
   const zip = new JSZip();
 
-  const sizes: Array<[number, string]> = [
+  const pngSizes: Array<[number, string]> = [
     [16, 'favicon-16.png'],
     [32, 'favicon-32.png'],
     [48, 'favicon-48.png'],
     [180, 'apple-touch-icon.png'],
   ];
 
-  await Promise.all(
-    sizes.map(async ([size, filename]) => {
+  const pngBlobs = await Promise.all(
+    pngSizes.map(async ([size]) => {
       const canvas = createEmojiCanvas(emoji, size);
-      const blob = await canvasToBlob(canvas);
-      zip.file(filename, blob);
+      return canvasToBlob(canvas);
     })
   );
 
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <text y=".9em" font-size="90" font-family="'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif">${emoji}</text>
-</svg>`;
-  zip.file('favicon.svg', svg);
+  pngSizes.forEach(([, filename], i) => {
+    zip.file(filename, pngBlobs[i]);
+  });
+
+  // Build ICO from the 16, 32, 48 PNG blobs (first three entries)
+  const icoBlob = await buildIcoFromPngBlobs(pngBlobs.slice(0, 3));
+  zip.file('favicon.ico', icoBlob);
+
+  // Use the shared SVG builder to ensure XML entities are escaped
+  zip.file('favicon.svg', buildSvgString(emoji));
 
   const content = await zip.generateAsync({ type: 'blob' });
   const url = URL.createObjectURL(content);
@@ -81,5 +86,5 @@ async function exportZip(emoji: string): Promise<void> {
   a.href = url;
   a.download = 'favicon-pack.zip';
   a.click();
-  URL.revokeObjectURL(url);
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }

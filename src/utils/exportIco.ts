@@ -4,7 +4,7 @@ import { createEmojiCanvas, canvasToBlob } from './canvas';
  * Builds a .ico file containing multiple PNG images.
  * Uses the modern PNG-in-ICO format, supported by all current browsers and OSes.
  */
-async function buildIcoFromPngBlobs(pngBlobs: Blob[]): Promise<Blob> {
+export async function buildIcoFromPngBlobs(pngBlobs: Blob[]): Promise<Blob> {
   const pngBuffers = await Promise.all(pngBlobs.map((b) => b.arrayBuffer()));
 
   const count = pngBuffers.length;
@@ -75,6 +75,6 @@ export async function exportIco(emoji: string, filename: string): Promise<void> 
   a.href = url;
   a.download = filename;
   a.click();
-  URL.revokeObjectURL(url);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
