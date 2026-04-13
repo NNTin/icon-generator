@@ -72,15 +72,15 @@ async function exportZip(emoji: string): Promise<void> {
   );
 
   faviconSizes.forEach(([, filename], i) => {
-    zip.file(`favicon/${filename}`, pngBlobs[i]);
+    zip.file(filename, pngBlobs[i]);
   });
 
   // Build ICO from the 16, 32, 48 PNG blobs (first three entries)
   const icoBlob = await buildIcoFromPngBlobs(pngBlobs.slice(0, 3));
-  zip.file('favicon/favicon.ico', icoBlob);
+  zip.file('favicon.ico', icoBlob);
 
   // Use the shared SVG builder to ensure XML entities are escaped
-  zip.file('favicon/favicon.svg', buildSvgString(emoji));
+  zip.file('favicon.svg', buildSvgString(emoji));
 
   // PWA icons
   const pwaIconSet = await generatePwaIconSet(emoji);
@@ -91,8 +91,8 @@ async function exportZip(emoji: string): Promise<void> {
     zip.file(`pwa-icons/${entry.filename}`, entry.blob);
   }
 
-  // manifest.json
-  zip.file('manifest.json', buildManifestString());
+  // manifest.json — icons reference pwa-icons/ subfolder to match the ZIP layout above
+  zip.file('manifest.json', buildManifestString('pwa-icons/'));
 
   const content = await zip.generateAsync({ type: 'blob' });
   const url = URL.createObjectURL(content);

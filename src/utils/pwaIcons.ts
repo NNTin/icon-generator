@@ -9,7 +9,7 @@ export type MaskableSize = typeof MASKABLE_SIZES[number];
 /** The emoji renders within the inner 80 % of the canvas — 10 % safe padding on each side.
  *  This meets the PWA maskable icon spec which requires a minimum safe zone of 40 px
  *  inscribed-circle radius at 192 px (≈ 83 % of canvas). */
-const MASKABLE_SCALE = 0.8;
+export const MASKABLE_SCALE = 0.8;
 
 export function createPwaIconCanvas(emoji: string, size: number): HTMLCanvasElement {
   const canvas = document.createElement('canvas');

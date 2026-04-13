@@ -1,5 +1,5 @@
 import { memo, useEffect, useRef } from 'react';
-import { PWA_SIZES, MASKABLE_SIZES } from '../utils/pwaIcons';
+import { PWA_SIZES, MASKABLE_SIZES, MASKABLE_SCALE } from '../utils/pwaIcons';
 
 const DISPLAY_SIZE = 56;
 
@@ -29,7 +29,7 @@ function PreviewItem({ emoji, label, maskable = false }: PreviewItemProps) {
       ctx.scale(dpr, dpr);
       ctx.clearRect(0, 0, DISPLAY_SIZE, DISPLAY_SIZE);
 
-      const scale = maskable ? 0.8 : 1;
+      const scale = maskable ? MASKABLE_SCALE : 1;
       const fontSize = DISPLAY_SIZE * 0.75 * scale;
       ctx.font = `${fontSize}px 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif`;
       ctx.textAlign = 'center';
