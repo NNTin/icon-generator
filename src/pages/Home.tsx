@@ -5,9 +5,11 @@ import DownloadPanel from '../components/DownloadPanel';
 import HowToUse from '../components/HowToUse';
 import ThemeToggle from '../components/ThemeToggle';
 import PWAExportPanel from '../components/PWAExportPanel';
+import { DEFAULT_EMOJI_FONT } from '../utils/emojiFont';
 
 export default function Home() {
   const [emoji, setEmoji] = useState('🥫');
+  const [emojiFont, setEmojiFont] = useState(DEFAULT_EMOJI_FONT.value);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
 
   const toggleTheme = useCallback(() => {
@@ -20,6 +22,10 @@ export default function Home() {
 
   const handleEmojiChange = useCallback((next: string) => {
     setEmoji(next);
+  }, []);
+
+  const handleFontChange = useCallback((next: string) => {
+    setEmojiFont(next);
   }, []);
 
   return (
@@ -49,12 +55,17 @@ export default function Home() {
 
         <div className="content-grid">
           <div className="left-col">
-            <EmojiInput emoji={emoji} onChange={handleEmojiChange} />
+            <EmojiInput
+              emoji={emoji}
+              onChange={handleEmojiChange}
+              font={emojiFont}
+              onFontChange={handleFontChange}
+            />
             <HowToUse />
           </div>
           <div className="right-col">
-            <PreviewCanvas emoji={emoji} />
-            <DownloadPanel emoji={emoji} />
+            <PreviewCanvas emoji={emoji} font={emojiFont} />
+            <DownloadPanel emoji={emoji} font={emojiFont} />
           </div>
         </div>
 
@@ -68,7 +79,7 @@ export default function Home() {
               <code>manifest.json</code> — making your site installable in seconds.
             </p>
           </div>
-          <PWAExportPanel emoji={emoji} />
+          <PWAExportPanel emoji={emoji} font={emojiFont} />
         </div>
       </main>
 

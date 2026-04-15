@@ -58,12 +58,12 @@ export async function buildIcoFromPngBlobs(pngBlobs: Blob[]): Promise<Blob> {
   return new Blob([icoBuffer], { type: 'image/x-icon' });
 }
 
-export async function exportIco(emoji: string, filename: string): Promise<void> {
+export async function exportIco(emoji: string, filename: string, font?: string): Promise<void> {
   const sizes = [16, 32, 48] as const;
 
   const pngBlobs = await Promise.all(
     sizes.map((size) => {
-      const canvas = createEmojiCanvas(emoji, size);
+      const canvas = createEmojiCanvas(emoji, size, font);
       return canvasToBlob(canvas);
     })
   );
