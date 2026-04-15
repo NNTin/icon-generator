@@ -1,4 +1,5 @@
 import { canvasToBlob } from './canvas';
+import { DEFAULT_FONT } from './emojiFont';
 
 export const PWA_SIZES = [72, 96, 128, 144, 152, 192, 384, 512] as const;
 export type PwaSize = typeof PWA_SIZES[number];
@@ -10,8 +11,6 @@ export type MaskableSize = typeof MASKABLE_SIZES[number];
  *  This meets the PWA maskable icon spec which requires a minimum safe zone of 40 px
  *  inscribed-circle radius at 192 px (≈ 83 % of canvas). */
 export const MASKABLE_SCALE = 0.8;
-
-const DEFAULT_FONT = "'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif";
 
 export function createPwaIconCanvas(
   emoji: string,

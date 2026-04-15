@@ -1,3 +1,5 @@
+import { DEFAULT_FONT } from './emojiFont';
+
 export function escapeXml(value: string): string {
   return value
     .replace(/&/g, '&amp;')
@@ -6,8 +8,6 @@ export function escapeXml(value: string): string {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&apos;');
 }
-
-const DEFAULT_FONT = "'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif";
 
 export function buildSvgString(emoji: string, font: string = DEFAULT_FONT): string {
   const safeEmoji = escapeXml(emoji);

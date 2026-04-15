@@ -1,4 +1,4 @@
-const DEFAULT_FONT = "'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif";
+import { DEFAULT_FONT } from './emojiFont';
 
 export function renderEmojiToCanvas(
   canvas: HTMLCanvasElement,
