@@ -6,10 +6,11 @@ const PREVIEW_SIZES = [16, 32, 48, 180] as const;
 interface SizeCanvasProps {
   emoji: string;
   size: typeof PREVIEW_SIZES[number];
+  font?: string;
 }
 
-function SizeCanvas({ emoji, size }: SizeCanvasProps) {
-  const canvasRef = useEmojiRenderer(emoji, size);
+function SizeCanvas({ emoji, size, font }: SizeCanvasProps) {
+  const canvasRef = useEmojiRenderer(emoji, size, font);
 
   const displaySize = size < 64 ? Math.max(size * 2, 48) : size;
   const isSmall = size < 64;
@@ -36,15 +37,16 @@ function SizeCanvas({ emoji, size }: SizeCanvasProps) {
 
 interface PreviewCanvasProps {
   emoji: string;
+  font?: string;
 }
 
-function PreviewCanvas({ emoji }: PreviewCanvasProps) {
+function PreviewCanvas({ emoji, font }: PreviewCanvasProps) {
   return (
     <div className="preview-section">
       <h2 className="section-title">Preview</h2>
       <div className="preview-grid">
         {PREVIEW_SIZES.map((size) => (
-          <SizeCanvas key={size} emoji={emoji} size={size} />
+          <SizeCanvas key={size} emoji={emoji} size={size} font={font} />
         ))}
       </div>
     </div>

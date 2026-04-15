@@ -16,14 +16,14 @@ function triggerDownload(url: string, filename: string): void {
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-export function usePwaIconGenerator(emoji: string): PwaIconGenerator {
+export function usePwaIconGenerator(emoji: string, font?: string): PwaIconGenerator {
   const [generating, setGenerating] = useState(false);
 
   const downloadPwaPack = useCallback(async () => {
     setGenerating(true);
     try {
       const zip = new JSZip();
-      const iconSet = await generatePwaIconSet(emoji);
+      const iconSet = await generatePwaIconSet(emoji, font);
 
       for (const entry of iconSet.regular) {
         zip.file(entry.filename, entry.blob);
@@ -39,7 +39,7 @@ export function usePwaIconGenerator(emoji: string): PwaIconGenerator {
     } finally {
       setGenerating(false);
     }
-  }, [emoji]);
+  }, [emoji, font]);
 
   return { generating, downloadPwaPack };
 }

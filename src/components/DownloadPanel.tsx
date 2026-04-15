@@ -3,6 +3,7 @@ import { useFaviconGenerator } from '../hooks/useFaviconGenerator';
 
 interface DownloadPanelProps {
   emoji: string;
+  font?: string;
 }
 
 interface DownloadItem {
@@ -20,8 +21,8 @@ const DOWNLOAD_ITEMS: DownloadItem[] = [
   { type: 'svg', label: 'favicon.svg', description: 'Scalable SVG' },
 ];
 
-function DownloadPanel({ emoji }: DownloadPanelProps) {
-  const { generating, generateAndDownload } = useFaviconGenerator(emoji);
+function DownloadPanel({ emoji, font }: DownloadPanelProps) {
+  const { generating, generateAndDownload } = useFaviconGenerator(emoji, font);
   const [copied, setCopied] = useState(false);
 
   const htmlSnippet = `<link rel="icon" href="/favicon.ico" sizes="any">

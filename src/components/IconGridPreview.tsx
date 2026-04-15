@@ -7,9 +7,10 @@ interface PreviewItemProps {
   emoji: string;
   label: string;
   maskable?: boolean;
+  font?: string;
 }
 
-function PreviewItem({ emoji, label, maskable = false }: PreviewItemProps) {
+function PreviewItem({ emoji, label, maskable = false, font }: PreviewItemProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
@@ -31,7 +32,8 @@ function PreviewItem({ emoji, label, maskable = false }: PreviewItemProps) {
 
       const scale = maskable ? MASKABLE_SCALE : 1;
       const fontSize = DISPLAY_SIZE * 0.75 * scale;
-      ctx.font = `${fontSize}px 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif`;
+      const resolvedFont = font ?? "'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif";
+      ctx.font = `${fontSize}px ${resolvedFont}`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(emoji, DISPLAY_SIZE / 2, DISPLAY_SIZE / 2);
@@ -39,7 +41,7 @@ function PreviewItem({ emoji, label, maskable = false }: PreviewItemProps) {
 
     const frameId = requestAnimationFrame(render);
     return () => cancelAnimationFrame(frameId);
-  }, [emoji, maskable]);
+  }, [emoji, maskable, font]);
 
   return (
     <div className="preview-item">
@@ -53,15 +55,16 @@ function PreviewItem({ emoji, label, maskable = false }: PreviewItemProps) {
 
 interface IconGridPreviewProps {
   emoji: string;
+  font?: string;
 }
 
-function IconGridPreview({ emoji }: IconGridPreviewProps) {
+function IconGridPreview({ emoji, font }: IconGridPreviewProps) {
   return (
     <div className="pwa-icon-grid-section">
       <h3 className="pwa-subsection-title">Regular icons</h3>
       <div className="preview-grid">
         {[...PWA_SIZES].map((size) => (
-          <PreviewItem key={size} emoji={emoji} label={`${size}×${size}`} />
+          <PreviewItem key={size} emoji={emoji} label={`${size}×${size}`} font={font} />
         ))}
       </div>
 
@@ -70,7 +73,7 @@ function IconGridPreview({ emoji }: IconGridPreviewProps) {
       </h3>
       <div className="preview-grid">
         {[...MASKABLE_SIZES].map((size) => (
-          <PreviewItem key={size} emoji={emoji} label={`${size}×${size}`} maskable />
+          <PreviewItem key={size} emoji={emoji} label={`${size}×${size}`} maskable font={font} />
         ))}
       </div>
     </div>

@@ -1,4 +1,5 @@
 import { canvasToBlob } from './canvas';
+import { DEFAULT_FONT } from './emojiFont';
 
 export const PWA_SIZES = [72, 96, 128, 144, 152, 192, 384, 512] as const;
 export type PwaSize = typeof PWA_SIZES[number];
@@ -11,7 +12,11 @@ export type MaskableSize = typeof MASKABLE_SIZES[number];
  *  inscribed-circle radius at 192 px (≈ 83 % of canvas). */
 export const MASKABLE_SCALE = 0.8;
 
-export function createPwaIconCanvas(emoji: string, size: number): HTMLCanvasElement {
+export function createPwaIconCanvas(
+  emoji: string,
+  size: number,
+  font: string = DEFAULT_FONT
+): HTMLCanvasElement {
   const canvas = document.createElement('canvas');
   canvas.width = size;
   canvas.height = size;
@@ -21,7 +26,7 @@ export function createPwaIconCanvas(emoji: string, size: number): HTMLCanvasElem
 
   ctx.clearRect(0, 0, size, size);
   const fontSize = size * 0.75;
-  ctx.font = `${fontSize}px 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif`;
+  ctx.font = `${fontSize}px ${font}`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText(emoji, size / 2, size / 2);
@@ -29,7 +34,11 @@ export function createPwaIconCanvas(emoji: string, size: number): HTMLCanvasElem
   return canvas;
 }
 
-export function createMaskableIconCanvas(emoji: string, size: number): HTMLCanvasElement {
+export function createMaskableIconCanvas(
+  emoji: string,
+  size: number,
+  font: string = DEFAULT_FONT
+): HTMLCanvasElement {
   const canvas = document.createElement('canvas');
   canvas.width = size;
   canvas.height = size;
@@ -39,7 +48,7 @@ export function createMaskableIconCanvas(emoji: string, size: number): HTMLCanva
 
   ctx.clearRect(0, 0, size, size);
   const fontSize = size * 0.75 * MASKABLE_SCALE;
-  ctx.font = `${fontSize}px 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif`;
+  ctx.font = `${fontSize}px ${font}`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText(emoji, size / 2, size / 2);
@@ -58,10 +67,13 @@ export interface PwaIconSet {
   maskable: PwaIconEntry[];
 }
 
-export async function generatePwaIconSet(emoji: string): Promise<PwaIconSet> {
+export async function generatePwaIconSet(
+  emoji: string,
+  font: string = DEFAULT_FONT
+): Promise<PwaIconSet> {
   const regular = await Promise.all(
     PWA_SIZES.map(async (size) => {
-      const canvas = createPwaIconCanvas(emoji, size);
+      const canvas = createPwaIconCanvas(emoji, size, font);
       const blob = await canvasToBlob(canvas);
       return { size, filename: `icon-${size}.png`, blob };
     })
@@ -69,7 +81,7 @@ export async function generatePwaIconSet(emoji: string): Promise<PwaIconSet> {
 
   const maskable = await Promise.all(
     MASKABLE_SIZES.map(async (size) => {
-      const canvas = createMaskableIconCanvas(emoji, size);
+      const canvas = createMaskableIconCanvas(emoji, size, font);
       const blob = await canvasToBlob(canvas);
       return { size, filename: `icon-${size}-maskable.png`, blob };
     })

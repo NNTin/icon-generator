@@ -14,7 +14,7 @@ interface FaviconGenerator {
   generateAndDownload: (type: DownloadType) => Promise<void>;
 }
 
-export function useFaviconGenerator(emoji: string): FaviconGenerator {
+export function useFaviconGenerator(emoji: string, font?: string): FaviconGenerator {
   const [generating, setGenerating] = useState(false);
 
   const generateAndDownload = useCallback(
@@ -23,38 +23,38 @@ export function useFaviconGenerator(emoji: string): FaviconGenerator {
       try {
         switch (type) {
           case 'png16':
-            await exportPng(emoji, 16, 'favicon-16.png');
+            await exportPng(emoji, 16, 'favicon-16.png', font);
             break;
           case 'png32':
-            await exportPng(emoji, 32, 'favicon-32.png');
+            await exportPng(emoji, 32, 'favicon-32.png', font);
             break;
           case 'png48':
-            await exportPng(emoji, 48, 'favicon-48.png');
+            await exportPng(emoji, 48, 'favicon-48.png', font);
             break;
           case 'png180':
-            await exportPng(emoji, 180, 'apple-touch-icon.png');
+            await exportPng(emoji, 180, 'apple-touch-icon.png', font);
             break;
           case 'ico':
-            await exportIco(emoji, 'favicon.ico');
+            await exportIco(emoji, 'favicon.ico', font);
             break;
           case 'svg':
-            await exportSvg(emoji, 'favicon.svg');
+            await exportSvg(emoji, 'favicon.svg', font);
             break;
           case 'zip':
-            await exportZip(emoji);
+            await exportZip(emoji, font);
             break;
         }
       } finally {
         setGenerating(false);
       }
     },
-    [emoji]
+    [emoji, font]
   );
 
   return { generating, generateAndDownload };
 }
 
-async function exportZip(emoji: string): Promise<void> {
+async function exportZip(emoji: string, font?: string): Promise<void> {
   const zip = new JSZip();
 
   const faviconSizes: Array<[number, string]> = [
@@ -66,7 +66,7 @@ async function exportZip(emoji: string): Promise<void> {
 
   const pngBlobs = await Promise.all(
     faviconSizes.map(async ([size]) => {
-      const canvas = createEmojiCanvas(emoji, size);
+      const canvas = createEmojiCanvas(emoji, size, font);
       return canvasToBlob(canvas);
     })
   );
@@ -80,10 +80,10 @@ async function exportZip(emoji: string): Promise<void> {
   zip.file('favicon.ico', icoBlob);
 
   // Use the shared SVG builder to ensure XML entities are escaped
-  zip.file('favicon.svg', buildSvgString(emoji));
+  zip.file('favicon.svg', buildSvgString(emoji, font));
 
   // PWA icons
-  const pwaIconSet = await generatePwaIconSet(emoji);
+  const pwaIconSet = await generatePwaIconSet(emoji, font);
   for (const entry of pwaIconSet.regular) {
     zip.file(`pwa-icons/${entry.filename}`, entry.blob);
   }
