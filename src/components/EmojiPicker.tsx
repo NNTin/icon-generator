@@ -1,9 +1,21 @@
 import { useState, useRef, useEffect, useCallback, memo } from 'react';
-import { EMOJI_CATEGORIES } from '../utils/emojiData';
+import { EMOJI_CATEGORIES, EMOJI_KEYWORDS } from '../utils/emojiData';
 
 interface EmojiPickerProps {
   onSelect: (emoji: string) => void;
   onClose: () => void;
+}
+
+function matchesQuery(emoji: string, categoryName: string, query: string): boolean {
+  if (!query) return true;
+  // Direct emoji character match
+  if (emoji === query) return true;
+  // Category name match
+  if (categoryName.toLowerCase().includes(query)) return true;
+  // Keyword match
+  const keywords = EMOJI_KEYWORDS[emoji];
+  if (keywords && keywords.includes(query)) return true;
+  return false;
 }
 
 function EmojiPicker({ onSelect, onClose }: EmojiPickerProps) {
@@ -43,12 +55,10 @@ function EmojiPicker({ onSelect, onClose }: EmojiPickerProps) {
 
   const query = search.trim().toLowerCase();
 
-  const filtered = query
-    ? EMOJI_CATEGORIES.map((cat) => ({
-        ...cat,
-        emojis: cat.emojis.filter((e) => e.includes(query)),
-      })).filter((cat) => cat.emojis.length > 0)
-    : EMOJI_CATEGORIES;
+  const filtered = EMOJI_CATEGORIES.map((cat) => ({
+    ...cat,
+    emojis: cat.emojis.filter((e) => matchesQuery(e, cat.name, query)),
+  })).filter((cat) => cat.emojis.length > 0);
 
   return (
     <div className="emoji-picker" ref={containerRef} role="dialog" aria-label="Emoji picker">
@@ -57,7 +67,7 @@ function EmojiPicker({ onSelect, onClose }: EmojiPickerProps) {
           ref={searchRef}
           type="text"
           className="emoji-picker-search"
-          placeholder="Search emojis…"
+          placeholder="Search by name or paste emoji…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           aria-label="Search emojis"
